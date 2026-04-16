@@ -41,7 +41,7 @@ function woocommerce_custom_shipping_setting_page()
             ">
                 <div>
                     <h2>ไปรษณีย์ไทย (EMS)</h2>
-                    <p>หากลูกค้าเลือกขนส่ง ไปรษณีย์ไทย (EMS) ให้บวกเพิ่มกี่บาท</p>
+                    <p>หากลูกค้าเลือกขนส่ง ไปรษณีย์ไทย (EMS) <br>ให้บวกเพิ่มกี่บาท</p>
                     <input type="number" name="ems_fee" value="<?php echo esc_attr(get_option('ems_fee', 20)); ?>" />
                     <h3>ค่าขนส่ง EMS</h3>
                     <h4>ไม่เกิน 20 กรัม</h4>
@@ -58,10 +58,10 @@ function woocommerce_custom_shipping_setting_page()
                     <input type="number" name="ems_fee_p6" value="<?php echo esc_attr(get_option('ems_fee_p6', 82)); ?>" />
                     <h4>1.501 กิโลกรัม - 2 กิโลกรัม</h4>
                     <input type="number" name="ems_fee_p7" value="<?php echo esc_attr(get_option('ems_fee_p7', 97)); ?>" />
-                    <h4>2.001 กิโลกรัม - 2.5 กิโลกรัม</h4>
-                    <input type="number" name="ems_fee_p8" value="<?php echo esc_attr(get_option('ems_fee_p8', 100)); ?>" />
                 </div>
                 <div>
+                    <h4>2.001 กิโลกรัม - 2.5 กิโลกรัม</h4>
+                    <input type="number" name="ems_fee_p8" value="<?php echo esc_attr(get_option('ems_fee_p8', 100)); ?>" />
                     <h4>2.501 กิโลกรัม - 3 กิโลกรัม</h4>
                     <input type="number" name="ems_fee_p9" value="<?php echo esc_attr(get_option('ems_fee_p9', 105)); ?>" />
                     <h4>3.001 กิโลกรัม - 3.5 กิโลกรัม</h4>
