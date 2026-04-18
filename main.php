@@ -26,7 +26,7 @@ function worldchem_custom_shipping_company_menu()
 function woocommerce_custom_shipping_setting_page()
 {
     ?>
-    <div class="wrap">
+    <div class="wrap" style="background: #fff; padding: 20px; border-radius: 10px; margin-top: 20px;">
         <form action="options.php" method="post">
             <?php
             settings_fields('shipping_settings_group');
