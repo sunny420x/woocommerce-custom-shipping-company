@@ -153,7 +153,7 @@ function worldchem_combined_shipping_methods($rates, $package)
 
     // 2. รายชื่อรหัสพื้นที่ห่างไกล (ก๊อปของพี่มาใส่ตรงนี้)
     $remote_areas_raw = get_option('remote_areas_list', '');
-    $remote_areas = preg_split('/[\s,]+/', $remote_areas_raw, -1, PREG_SPLIT_NO_EMPTY);
+    $remote_areas = explode("\n", $remote_areas_raw);
     $remote_areas = array_map('trim', $remote_areas);
 
     // 3. เช็คว่าเป็นพื้นที่ห่างไกลไหม
