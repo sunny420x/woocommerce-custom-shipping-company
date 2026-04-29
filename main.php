@@ -102,6 +102,13 @@ function woocommerce_custom_shipping_setting_page()
                     <p>หากลูกค้าอยู่ในพื้นที่ห่างไกล เช่น 85 อำเภอห่างไกล จะคิดค่าบริการเพิ่มกี่บาท</p>
                     <input type="number" name="remote_surcharge"
                         value="<?php echo esc_attr(get_option('remote_surcharge', 50)); ?>" />
+
+                    <h2>อื่น ๆ</h2>
+                    <p>ลูกค้าสามารถรับสินค้าเองที่ร้านได้</p>
+                    <select name="enable_self_pickup" id="">
+                        <option value="yes" <?php if(get_option('enable_self_pickup', 'no') == "yes") { echo "selected"; } ?>>เปิด</option>
+                        <option value="no" <?php if(get_option('enable_self_pickup', 'no') == "no") { echo "selected"; } ?>>ปิด</option>
+                    </select>
                 </div>
             </div>
             <?php submit_button('บันทึกการเปลี่ยนแปลง'); ?>
@@ -116,6 +123,8 @@ function woocommerce_custom_shipping_setting_page()
 add_action('admin_init', 'woocommerce_custom_shipping_setting_init');
 function woocommerce_custom_shipping_setting_init()
 {
+    register_setting('shipping_settings_group', 'enable_self_pickup');
+
     register_setting('shipping_settings_group', 'ems_fee');
     register_setting('shipping_settings_group', 'packing_fee');
     register_setting('shipping_settings_group', 'kerry_express_fee');
@@ -141,8 +150,8 @@ function woocommerce_custom_shipping_setting_init()
     register_setting('shipping_settings_group', 'remote_areas_list');
 }
 
-add_filter('woocommerce_package_rates', 'worldchem_combined_shipping_methods', 10, 2);
-function worldchem_combined_shipping_methods($rates, $package)
+add_filter('woocommerce_package_rates', 'combined_shipping_methods', 10, 2);
+function combined_shipping_methods($rates, $package)
 {
     $new_rates = array();
     $total_weight = WC()->cart->get_cart_contents_weight(); // กรัม
@@ -221,6 +230,15 @@ function worldchem_combined_shipping_methods($rates, $package)
 
                 $ems->cost = $ems_cost + $packing_fee + $remote_surcharge;
                 $new_rates[$ems->id] = $ems;
+            }
+
+            if(get_option('enable_self_pickup', "no") == "yes") {
+                $self_pickup = clone $rate;
+                $pickup_id = $rate_id . '_selfpickup';
+                $self_pickup->id = $pickup_id;
+                $self_pickup->label = 'รับเองหน้าร้าน';
+                $self_pickup->cost = 0;
+                $new_rates[$pickup_id] = $self_pickup;
             }
         } else {
             // ถ้ามีขนส่งอื่นที่ไม่ใช่ Weight Based ให้โชว์ปกติ
