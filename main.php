@@ -109,6 +109,12 @@ function woocommerce_custom_shipping_setting_page()
                         <option value="yes" <?php if(get_option('enable_self_pickup', 'no') == "yes") { echo "selected"; } ?>>เปิด</option>
                         <option value="no" <?php if(get_option('enable_self_pickup', 'no') == "no") { echo "selected"; } ?>>ปิด</option>
                     </select>
+                    <br>
+                    <p>การรับสินค้าที่ร้านจะไม่ได้รับส่วนลดจากคูปอง</p>
+                    <select name="no_discount_self_pickup" id="">
+                        <option value="yes" <?php selected(get_option('no_discount_self_pickup'), 'yes') ?>>ใช่</option>
+                        <option value="no" <?php selected(get_option('no_discount_self_pickup'), 'no') ?>>ไม่ใช่</option>
+                    </select>
                 </div>
             </div>
             <?php submit_button('บันทึกการเปลี่ยนแปลง'); ?>
@@ -148,6 +154,8 @@ function woocommerce_custom_shipping_setting_init()
     register_setting('shipping_settings_group', 'ems_fee_after_6kg');
 
     register_setting('shipping_settings_group', 'remote_areas_list');
+
+    register_setting('shipping_settings_group', 'no_discount_self_pickup');
 }
 
 add_filter('woocommerce_package_rates', 'combined_shipping_methods', 10, 2);
@@ -239,6 +247,25 @@ function combined_shipping_methods($rates, $package)
                 $self_pickup->label = 'รับเองหน้าร้าน';
                 $self_pickup->cost = 0;
                 $new_rates[$pickup_id] = $self_pickup;
+            }
+
+            if(get_option('no_discount_self_pickup', "yes") == "yes") {
+                add_action('woocommerce_before_calculate_totals', 'disable_discounts_for_self_pickup', 20);
+
+                function disable_discounts_for_self_pickup($cart) {
+                    if (is_admin() && !defined('DOING_AJAX')) return;
+
+                    $chosen_methods = WC()->session->get('chosen_shipping_methods');
+                    $chosen_shipping = isset($chosen_methods[0]) ? $chosen_methods[0] : '';
+
+                    if (strpos($chosen_shipping, '_selfpickup') !== false) {
+                        if (!empty($cart->get_applied_coupons())) {
+                            $cart->remove_coupons();
+                            wc_clear_notices();
+                            wc_add_notice('การรับสินค้าเองหน้าร้านไม่สามารถใช้ร่วมกับคูปองส่วนลดได้', 'notice');
+                        }
+                    }
+                }
             }
         } else {
             // ถ้ามีขนส่งอื่นที่ไม่ใช่ Weight Based ให้โชว์ปกติ
